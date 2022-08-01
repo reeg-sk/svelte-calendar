@@ -8,10 +8,21 @@
     if (day == 0) day = 7; // make Sunday (0) the last day
     return day - 1;
   }
+
+  function toggleSelected(e) {
+    e.target.classList.toggle("selected");
+  }
 </script>
 
 <main>
-  <input type="number" bind:value={month} />
+  <p class="warn">
+    <b>For testing only!</b>
+    <span>Double-click or press space (when active) on selected date to select.</span>
+    <label>
+      Change month:
+      <input type="number" bind:value={month} />
+    </label>
+  </p>
   <h1>
     {d.toLocaleDateString("en", { month: "long" })}
     {d.getFullYear()}
@@ -44,6 +55,7 @@
               </td>
             {:else}
               <td
+                tabindex="0"
                 class={`day normal ${
                   7 * y + i + 1 - getDay(d) ===
                     new Date().getDay() &&
@@ -51,8 +63,10 @@
                     new Date().toLocaleDateString("en") &&
                   "current"
                 }`}
+                on:dblclick={toggleSelected}
+                on:keypress={(e) => e.key === ' ' && toggleSelected(e)}
               >
-                <p>{7 * y + i + 1 - getDay(d)}</p>
+                {7 * y + i + 1 - getDay(d)}
               </td>
             {/if}
           {/each}
@@ -75,9 +89,14 @@
 
   td {
     background: #484848;
-    padding: 0.5rem 1rem;
+    padding: 1rem 1.5rem;
     cursor: pointer;
     min-width: 56px;
+    border: 2px solid transparent;
+
+    user-select: none;
+    font-size: 1.8rem;
+    margin: 0.5rem;
   }
 
   td.empty {
@@ -93,8 +112,30 @@
     color: #54ffb8;
   }
 
-  td p {
-    font-size: 1.8rem;
-    margin: 0.5rem;
+  td.selected {
+    background-color: #3e72ba;
+  }
+
+  td.normal.selected {
+    background-color: #3c67a450;
+  }
+
+  .normal:focus,
+  .normal:active {
+    outline: none;
+    border: 2px solid #466ca1;
+    background: #434954;
+  }
+
+  /** Dev only */
+  .warn {
+    text-align: center;
+    background-color: #cd0f0f;
+    border-radius: 3px;
+    padding: 0.5rem;
+  }
+
+  .warn label {
+    display: block;
   }
 </style>
